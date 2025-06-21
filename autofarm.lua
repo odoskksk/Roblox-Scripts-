@@ -1,168 +1,196 @@
--- "Cole Is A W Script" GUI - Mobile Friendly, Enhanced
--- For educational purposes only
+-- Coles Script | MM2 GUI | Delta Mobile Compatible
+-- Created for Cole by ChatGPT
 
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local TweenService = game:GetService("TweenService")
 
--- GUI SETUP
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "ColeIsAW_GUI"
+-- GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ColesScriptUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game.CoreGui
 
--- TOGGLE BUTTON
-local toggleBtn = Instance.new("TextButton", gui)
-toggleBtn.Size = UDim2.new(0, 40, 0, 40)
-toggleBtn.Position = UDim2.new(0, 10, 0, 10)
-toggleBtn.Text = "≡"
-toggleBtn.TextSize = 22
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextColor3 = Color3.new(1, 1, 1)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 50, 0, 50)
+ToggleButton.Position = UDim2.new(0, 10, 0, 10)
+ToggleButton.Text = "≡"
+ToggleButton.Font = Enum.Font.FredokaOne
+ToggleButton.TextSize = 24
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+ToggleButton.TextColor3 = Color3.new(1, 1, 1)
+ToggleButton.Parent = ScreenGui
 
--- MAIN GUI FRAME
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 240, 0, 270)
-frame.Position = UDim2.new(0, 60, 0, 60)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 420, 0, 500)
+MainFrame.Position = UDim2.new(0.5, -210, 0.5, -250)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BorderSizePixel = 0
+MainFrame.Visible = true
+MainFrame.Parent = ScreenGui
+MainFrame.Active = true
+MainFrame.Draggable = true
 
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "Cole Is A W Script"
-title.Font = Enum.Font.FredokaOne
-title.TextColor3 = Color3.new(1, 1, 1)
-title.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-title.TextSize = 18
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Text = "📜 Coles Script"
+Title.Font = Enum.Font.FredokaOne
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextSize = 32
+Title.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+Title.Parent = MainFrame
 
--- BUTTON FUNCTION
-local function makeBtn(text, yPos, color)
-	local btn = Instance.new("TextButton", frame)
-	btn.Size = UDim2.new(0.85, 0, 0, 32)
-	btn.Position = UDim2.new(0.075, 0, 0, yPos)
-	btn.Text = text
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 14
-	btn.BackgroundColor3 = color or Color3.fromRGB(0, 170, 0)
-	btn.TextColor3 = Color3.new(1, 1, 1)
-	return btn
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Padding = UDim.new(0, 4)
+UIListLayout.FillDirection = Enum.FillDirection.Vertical
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Parent = MainFrame
+
+-- Toggle GUI
+ToggleButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Auto Coin Farm (Core)
+local CoinFarmEnabled = false
+local CoinCount = 0
+
+local function createButton(name, callback)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -20, 0, 35)
+	button.Position = UDim2.new(0, 10, 0, 0)
+	button.Text = name
+	button.Font = Enum.Font.GothamBold
+	button.TextSize = 16
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	button.Parent = MainFrame
+	button.MouseButton1Click:Connect(callback)
 end
 
--- BUTTONS
-local farmBtn = makeBtn("Start Coin Farm", 40)
-local killBtn = makeBtn("Kill All (Murderer)", 80, Color3.fromRGB(255, 60, 60))
-local espBtn = makeBtn("ESP Roles", 120, Color3.fromRGB(60, 200, 255))
-local aimbotBtn = makeBtn("Sheriff Aimbot", 160, Color3.fromRGB(255, 160, 60))
-local muteBtn = makeBtn("Mute Game", 200, Color3.fromRGB(100, 100, 100))
+-- Coin ESP
+local function highlightCoins()
+	for _, v in pairs(Workspace:GetDescendants()) do
+		if v:IsA("Part") and v.Name == "Coin" and not v:FindFirstChild("ColesCoinESP") then
+			local bill = Instance.new("BillboardGui", v)
+			bill.Name = "ColesCoinESP"
+			bill.Size = UDim2.new(0, 100, 0, 40)
+			bill.AlwaysOnTop = true
+			local label = Instance.new("TextLabel", bill)
+			label.Text = "💰 Coin"
+			label.Size = UDim2.new(1, 0, 1, 0)
+			label.BackgroundTransparency = 1
+			label.TextColor3 = Color3.new(1, 1, 0)
+			label.Font = Enum.Font.GothamBold
+			label.TextScaled = true
+		end
+	end
+end
 
--- Hide/show toggle
-local visible = true
-toggleBtn.MouseButton1Click:Connect(function()
-	visible = not visible
-	frame.Visible = visible
-end)
+-- Coin Farming Logic
+local function autoFarmCoins()
+	while CoinFarmEnabled do
+		if Workspace:FindFirstChild("Coins") then
+			for _, coin in pairs(Workspace.Coins:GetChildren()) do
+				if coin:IsA("Part") then
+					pcall(function()
+						LocalPlayer.Character:PivotTo(coin.CFrame + Vector3.new(0, 2, 0))
+						task.wait(0.3)
+						CoinCount += 1
+						if CoinCount >= 40 then
+							LocalPlayer.Character:BreakJoints()
+							CoinCount = 0
+						end
+					end)
+				end
+			end
+		end
+		task.wait(1)
+	end
+end
 
--- ANTI-AFK
-player.Idled:Connect(function()
+-- Kill All (Murderer Only)
+local function killAll()
+	local knife = LocalPlayer.Backpack:FindFirstChild("Knife") or LocalPlayer.Character:FindFirstChild("Knife")
+	if knife then
+		for _, player in pairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+				pcall(function()
+					LocalPlayer.Character:PivotTo(player.Character.HumanoidRootPart.CFrame)
+					task.wait(0.2)
+				end)
+			end
+		end
+	end
+end
+
+-- Sheriff Aimbot (Basic Lock-On)
+local function sheriffAimbot()
+	local gun = LocalPlayer.Backpack:FindFirstChild("Gun") or LocalPlayer.Character:FindFirstChild("Gun")
+	if not gun then return end
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Knife") then
+			local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+			if hrp then
+				LocalPlayer.Character:PivotTo(hrp.CFrame * CFrame.new(0, 0, -10))
+			end
+		end
+	end
+end
+
+-- ESP Roles
+local function roleESP()
+	for _, player in pairs(Players:GetPlayers()) do
+		if player.Character and not player.Character:FindFirstChild("ColesESP") then
+			local tag = Instance.new("BillboardGui", player.Character:FindFirstChild("Head"))
+			tag.Name = "ColesESP"
+			tag.Size = UDim2.new(0, 100, 0, 40)
+			tag.AlwaysOnTop = true
+			local label = Instance.new("TextLabel", tag)
+			label.Size = UDim2.new(1, 0, 1, 0)
+			label.BackgroundTransparency = 1
+			label.Text = player.Name
+			label.TextColor3 = Color3.fromRGB(255, 255, 255)
+			label.Font = Enum.Font.GothamBold
+			label.TextScaled = true
+		end
+	end
+end
+
+-- Anti-AFK
+LocalPlayer.Idled:Connect(function()
 	local vu = game:GetService("VirtualUser")
-	vu:Button2Down(Vector2.new(), workspace.CurrentCamera.CFrame)
-	wait(1)
-	vu:Button2Up(Vector2.new(), workspace.CurrentCamera.CFrame)
+	vu:Button2Down(Vector2.new())
+	task.wait(1)
+	vu:Button2Up(Vector2.new())
 end)
 
--- COIN FARM
-local farming = false
-farmBtn.MouseButton1Click:Connect(function()
-	farming = not farming
-	farmBtn.Text = farming and "Stop Coin Farm" or "Start Coin Farm"
-	coroutine.wrap(function()
-		while farming do
-			local folder = workspace:FindFirstChild("Coins") or workspace:FindFirstChildOfClass("Folder")
-			if folder then
-				for _, coin in pairs(folder:GetChildren()) do
-					if coin:IsA("Part") and coin.Name:lower():find("coin") then
-						pcall(function()
-							player.Character:MoveTo(coin.Position + Vector3.new(0, 2, 0))
-						end)
-						wait(0.2)
-					end
-				end
-			end
-			wait(0.5)
-		end
-	end)()
-end)
-
--- KILL ALL
-killBtn.MouseButton1Click:Connect(function()
-	local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
-	if not tool then warn("No weapon equipped!") return end
-	for _, target in pairs(game.Players:GetPlayers()) do
-		if target ~= player and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-			pcall(function()
-				player.Character:MoveTo(target.Character.HumanoidRootPart.Position)
-			end)
-			wait(0.3)
-		end
+-- Add buttons
+createButton("💰 Toggle Auto Coin Farm", function()
+	CoinFarmEnabled = not CoinFarmEnabled
+	if CoinFarmEnabled then
+		autoFarmCoins()
 	end
 end)
 
--- ESP
-local espEnabled = false
-espBtn.MouseButton1Click:Connect(function()
-	espEnabled = not espEnabled
-	for _, p in ipairs(game.Players:GetPlayers()) do
-		if p ~= player and p.Character then
-			local existing = p.Character:FindFirstChild("ColeESP")
-			if existing then existing:Destroy() end
-			if espEnabled then
-				local gui = Instance.new("BillboardGui", p.Character)
-				gui.Name = "ColeESP"
-				gui.Adornee = p.Character:FindFirstChild("Head")
-				gui.Size = UDim2.new(0, 100, 0, 40)
-				gui.AlwaysOnTop = true
-				local txt = Instance.new("TextLabel", gui)
-				txt.Size = UDim2.new(1, 0, 1, 0)
-				txt.BackgroundTransparency = 1
-				txt.Text = p.Name .. " (Unknown)"
-				txt.Font = Enum.Font.GothamBold
-				txt.TextSize = 14
-				txt.TextColor3 = Color3.new(1, 0, 0)
-			end
-		end
-	end
+createButton("🧲 Highlight Coins", function()
+	highlightCoins()
 end)
 
--- AIMBOT
-local aimbot = false
-aimbotBtn.MouseButton1Click:Connect(function()
-	aimbot = not aimbot
-	aimbotBtn.Text = aimbot and "Aimbot: ON" or "Sheriff Aimbot"
+createButton("🔪 Kill All (Murderer)", function()
+	killAll()
 end)
 
-game:GetService("RunService").RenderStepped:Connect(function()
-	if not aimbot then return end
-	for _, p in pairs(game.Players:GetPlayers()) do
-		if p ~= player and p.Character and p.Character:FindFirstChild("Humanoid") then
-			if p.Character:FindFirstChildOfClass("Tool") then
-				local aimPart = p.Character:FindFirstChild("Torso") or p.Character:FindFirstChild("UpperTorso")
-				if aimPart then
-					mouse.TargetFilter = workspace
-					mouse.Hit = CFrame.new(aimPart.Position)
-				end
-			end
-		end
-	end
+createButton("🎯 Sheriff Aimbot", function()
+	sheriffAimbot()
 end)
 
--- MUTE
-local muted = false
-muteBtn.MouseButton1Click:Connect(function()
-	muted = not muted
-	for _, s in ipairs(game:GetDescendants()) do
-		if s:IsA("Sound") then
-			s.Volume = muted and 0 or 0.5
-		end
-	end
-	muteBtn.Text = muted and "Unmute Game" or "Mute Game"
+createButton("👁️ ESP Roles", function()
+	roleESP()
 end)
+
+-- Done
+print("[Coles Script] Loaded successfully.")
